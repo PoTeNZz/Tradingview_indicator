@@ -1,0 +1,111 @@
+//@version=5
+indicator(title="4 EMA + VWAP + Supertrend", shorttitle="4EMA + VWAP + Supertrend", overlay=true)
+
+// Moving Averages Settings
+enableEMA1 = input.bool(true, title="Enable 1st MA")
+enableEMA2 = input.bool(true, title="Enable 2nd MA")
+enableEMA3 = input.bool(true, title="Enable 3rd MA")
+enableEMA4 = input.bool(true, title="Enable 4th MA")
+len1 = input.int(9, minval=1, title="Length 1")
+len2 = input.int(21, minval=1, title="Length 2")
+len3 = input.int(55, minval=1, title="Length 3")
+len4 = input.int(100, minval=1, title="Length 4")
+
+src1 = input(close, title="Source 1")
+src2 = input(close, title="Source 2")
+src3 = input(close, title="Source 3")
+src4 = input(close, title="Source 4")
+
+out1 = enableEMA1 ? ta.ema(src1, len1) : na
+out2 = enableEMA2 ? ta.ema(src2, len2) : na
+out3 = enableEMA3 ? ta.ema(src3, len3) : na
+out4 = enableEMA4 ? ta.ema(src4, len4) : na
+
+// VWAP Settings
+enableVWAP = input(true, title="Enable VWAP", group="VWAP Settings")
+src_vwap = input(title = "VWAP Source", defval = hlc3, group="VWAP Settings", display = display.data_window)
+offsetVWAP = input.int(0, title="VWAP Offset", group="VWAP Settings", minval=0, display = display.data_window)
+
+BANDS_GROUP = "Bands Settings"
+calcModeInput = input.string("Standard Deviation", "Bands Calculation Mode", options = ["Standard Deviation", "Percentage"], group = BANDS_GROUP, display = display.data_window)
+showBand_1 = input(true, title = "", group = BANDS_GROUP, inline = "band_1", display = display.data_window)
+bandMult_1 = input.float(1.0, title = "Bands Multiplier #1", group = BANDS_GROUP, inline = "band_1", step = 0.5, minval=0, display = display.data_window)
+
+// Supertrend Settings
+enableSupertrend = input.bool(true, title="Enable Supertrend")
+atrLength = input.int(10, "ATR Length", minval = 1)
+factor = input.float(3.0, "Factor", minval = 0.01, step = 0.01)
+
+// Moving Averages
+plot(enableEMA1 ? out1 : na, title="EMA 1", color=color.rgb(35, 255, 251))
+plot(enableEMA2 ? out2 : na, title="EMA 2", color=color.blue)
+plot(enableEMA3 ? out3 : na, title="EMA 3", color=color.rgb(156, 105, 202))
+plot(enableEMA4 ? out4 : na, title="EMA 4", color=color.red)
+
+// VWAP
+if (!hideVWAP)
+    isNewPeriod = request.security(syminfo.tickerid, timeframe.period, '1D', lookahead = barmerge.lookahead_on) != request.security(syminfo.tickerid, timeframe.period, '1D', lookahead = barmerge.lookahead_on)[1]
+    [vwapValue, _, _] = ta.vwap(src_vwap, isNewPeriod, 1)
+    plot(vwapValue, title="VWAP", color=color.blue, offset=offsetVWAP)
+
+// Supertrend
+[supertrend, direction] = enableSupertrend ? ta.supertrend(factor, atrLength) : [na, na]
+plot(supertrend, color=color.purple)
+fill(supertrend, supertrend > supertrend[1] ? color.green : color.red, title="Supertrend Fill")
+
+
+//@version=5
+indicator(title="4 EMA + VWAP + Supertrend", shorttitle="4EMA + VWAP + Supertrend", overlay=true)
+
+// Moving Averages Settings
+enableEMA1 = input.bool(true, title="Enable 1st MA")
+enableEMA2 = input.bool(true, title="Enable 2nd MA")
+enableEMA3 = input.bool(true, title="Enable 3rd MA")
+enableEMA4 = input.bool(true, title="Enable 4th MA")
+len1 = input.int(9, minval=1, title="Length 1")
+len2 = input.int(21, minval=1, title="Length 2")
+len3 = input.int(55, minval=1, title="Length 3")
+len4 = input.int(100, minval=1, title="Length 4")
+
+src1 = input(close, title="Source 1")
+src2 = input(close, title="Source 2")
+src3 = input(close, title="Source 3")
+src4 = input(close, title="Source 4")
+
+out1 = enableEMA1 ? ta.ema(src1, len1) : na
+out2 = enableEMA2 ? ta.ema(src2, len2) : na
+out3 = enableEMA3 ? ta.ema(src3, len3) : na
+out4 = enableEMA4 ? ta.ema(src4, len4) : na
+
+// VWAP Settings
+enableVWAP = input.bool(true, title="Enable VWAP")
+src_vwap = input(title = "VWAP Source", defval = hlc3)
+offsetVWAP = input.int(0, title="VWAP Offset")
+
+BANDS_GROUP = "Bands Settings"
+calcModeInput = input.string("Standard Deviation", "Bands Calculation Mode", options = ["Standard Deviation", "Percentage"], group = BANDS_GROUP)
+showBand_1 = input(true, title = "", group = BANDS_GROUP, inline = "band_1")
+bandMult_1 = input.float(1.0, title = "Bands Multiplier #1", group = BANDS_GROUP, inline = "band_1", step = 0.5)
+
+// Supertrend Settings
+enableSupertrend = input.bool(true, title="Enable Supertrend")
+atrLength = input.int(10, "ATR Length", minval = 1)
+factor = input.float(3.0, "Factor", minval = 0.01, step = 0.01)
+
+// Moving Averages
+plot(enableEMA1 ? out1 : na, title="EMA 1", color=color.rgb(35, 255, 251))
+plot(enableEMA2 ? out2 : na, title="EMA 2", color=color.blue)
+plot(enableEMA3 ? out3 : na, title="EMA 3", color=color.rgb(156, 105, 202))
+plot(enableEMA4 ? out4 : na, title="EMA 4", color=color.red)
+
+// VWAP
+if enableVWAP
+    isNewPeriod = request.security(syminfo.tickerid, timeframe.period, '1D', lookahead = barmerge.lookahead_on) != request.security(syminfo.tickerid, timeframe.period, '1D', lookahead = barmerge.lookahead_on)[1]
+    [vwapValue, _, _] = ta.vwap(src_vwap, isNewPeriod, 1)
+    plot(vwapValue, title="VWAP", color=color.blue, offset=offsetVWAP)
+
+// Supertrend
+if enableSupertrend
+    [supertrend, direction] = ta.supertrend(factor, atrLength)
+    plot(supertrend, color=color.purple)
+    fill(supertrend, supertrend > supertrend[1] ? color.green : color.red, title="Supertrend Fill")

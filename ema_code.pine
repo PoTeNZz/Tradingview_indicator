@@ -1,0 +1,31 @@
+//@version=5
+//@Author: Potenz (inspired by AdventTrading)
+
+// This indicator was made to allow four moving averages to be displayed without needing to use up 4 charting indicators individually
+
+indicator(title="Four Moving Averages", shorttitle="FEMA", overlay=true)
+
+// Checkbox's for the other 2 MA's
+a = input.bool(true, title="Enable 2nd MA")
+b = input.bool(true, title="Enable 3rd MA")
+c = input.bool(true, title="Enable 4rd MA")
+
+len = input.int(9, minval=1, title="Length")
+len2 = input.int(21, minval=1, title="Length2")
+len3 = input.int(55, minval=1, title="Length3")
+len4 = input.int(100, minval=1, title="Length4")
+
+src = input(close, title="Source")
+src2 = input(close, title="Source2")
+src3 = input(close, title="Source3")
+src4 = input(close, title="Source4")
+
+out = ta.ema(src, len)
+out2 = ta.ema(src2, len2)
+out3 = ta.ema(src3, len3)
+out4 = ta.ema(src4, len4)
+
+plot(out, title="EMA", color=color.rgb(35, 255, 251))
+plot(a ? out2: na, title="EMA2", color=color.blue)
+plot(b ? out3: na, title="EMA3", color=color.rgb(156, 105, 202))
+plot(c ? out4: na, title="EMA4", color=color.red)
